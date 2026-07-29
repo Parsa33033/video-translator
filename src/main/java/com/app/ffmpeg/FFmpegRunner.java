@@ -69,11 +69,21 @@ public class FFmpegRunner {
         if (output.isEmpty()) {
             throw new FFmpegException("Could not probe duration for " + video);
         }
-        try {
-            return Double.parseDouble(output);
-        } catch (NumberFormatException e) {
-            throw new FFmpegException("Unexpected ffprobe duration output: '" + output + "'", e);
+        // stderr is merged into stdout (see run()), so ffprobe warnings such as
+        // "[mov,mp4,...] wrong sample count" can appear alongside the duration.
+        // Scan for the line that actually parses as a number.
+        for (String line : output.split("\\R")) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            try {
+                return Double.parseDouble(trimmed);
+            } catch (NumberFormatException ignored) {
+                // not the duration line (likely a warning); keep looking
+            }
         }
+        throw new FFmpegException("Unexpected ffprobe duration output: '" + output + "'");
     }
 
     public Path extractAudio(Path video, Path outputWav, Consumer<String> logSink) {

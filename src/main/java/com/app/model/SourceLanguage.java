@@ -4,7 +4,10 @@ public enum SourceLanguage {
     FRENCH("French", "fr"),
     GERMAN("German", "de"),
     ITALIAN("Italian", "it"),
-    DUTCH("Dutch", "nl");
+    DUTCH("Dutch", "nl"),
+    RUSSIAN("Russian", "ru"),
+    SPANISH("Spanish", "es"),
+    PORTUGUESE("Portuguese", "pt");
 
     private final String displayName;
     private final String code;
